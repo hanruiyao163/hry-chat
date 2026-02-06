@@ -3,8 +3,37 @@
  * 处理与后端的通信
  */
 import type { ChatRequest, ChatChunk, ModelConfig, Message } from '@/types/chat';
+import type { UserProfile, UserSettings } from '@/types/user';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+/**
+ * 获取用户资料
+ */
+export async function fetchUserProfile(): Promise<UserProfile> {
+  const response = await fetch(`${API_BASE_URL}/api/user/profile`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch user profile');
+  }
+  return response.json();
+}
+
+/**
+ * 更新用户设置
+ */
+export async function updateUserSettings(settings: UserSettings): Promise<UserSettings> {
+  const response = await fetch(`${API_BASE_URL}/api/user/settings`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(settings),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update user settings');
+  }
+  return response.json();
+}
 
 /**
  * 获取模型配置

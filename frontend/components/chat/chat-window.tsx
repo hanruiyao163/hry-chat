@@ -7,7 +7,6 @@
  * - 底部：固定输入框 (shrink-0)
  */
 import { useAtom } from 'jotai';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageList } from './message-list';
 import { ChatInput } from './chat-input';
 import { currentMessagesAtom } from '@/lib/atoms';
@@ -18,10 +17,8 @@ export function ChatWindow() {
   return (
     <div className="flex flex-col h-full w-full relative bg-white dark:bg-zinc-950 overflow-hidden">
       {/* 消息滚动区域 */}
-      <div className="flex-1 overflow-hidden relative w-full">
-        <ScrollArea className="h-full w-full">
-          <MessageList messages={messages} />
-        </ScrollArea>
+      <div className="flex-1 overflow-hidden relative w-full flex flex-col">
+        <MessageList messages={messages} />
       </div>
 
       {/* 底部输入框区域 */}

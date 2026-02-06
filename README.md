@@ -189,6 +189,11 @@ data: {"content": "", "done": true, "message_id": "xxx", "citations": [...]}
 
 渲染后，引用会显示为带下划线的可交互元素，鼠标悬浮时显示原文气泡。
 
+解析说明：
+- 使用 remark AST 插件在解析阶段识别引用语法，再交给渲染组件处理。
+- 引用解析只作用于普通文本节点，避免影响代码块/行内代码。
+- 引用可以出现在加粗、斜体、链接等内联标记中，都会被正确识别。
+
 ## 开发模式
 
 ### Mock 模式
@@ -200,6 +205,11 @@ data: {"content": "", "done": true, "message_id": "xxx", "citations": [...]}
 1. 设置 `MOCK_MODE=false`
 2. 配置 `LLM_API_KEY` 为你的 API 密钥
 3. 根据需要配置 `LLM_PROVIDER` 和 `LLM_MODEL`
+
+## UI 注意事项
+
+- Tooltip 外层不要设置 `overflow-hidden`，否则箭头会被裁切并出现延迟显示。若需要裁切内容，请把 `overflow-hidden` 放在内部容器上。
+- 流式消息滚动建议：仅在接近底部时自动跟随，避免打断阅读；滚动锚点已关闭，减少内容增量时的跳动。
 
 ## 后续扩展
 

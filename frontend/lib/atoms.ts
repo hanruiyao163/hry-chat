@@ -43,6 +43,22 @@ export const streamingMessageAtom = atom<Message | null>(null);
 /** 侧边栏是否展开 */
 export const sidebarOpenAtom = atomWithStorage<boolean>('hry-chat-sidebar-open', true);
 
+/** 滚动指令：设置后 MessageList 会滚动到该消息 ID，然后清空 */
+export const scrollToMessageIdAtom = atom<string | null>(null);
+
+/** 
+ * 滚动状态管理
+ * - userInterrupted: 用户是否手动滚动打断了自动滚动
+ * - anchorMessageId: 需要保持在视口顶部的消息 ID（用户刚发送的消息）
+ */
+export const scrollStateAtom = atom<{
+  userInterrupted: boolean;
+  anchorMessageId: string | null;
+}>({
+  userInterrupted: false,
+  anchorMessageId: null,
+});
+
 // ============ 配置相关 ============
 
 /** 模型配置（从后端获取） */

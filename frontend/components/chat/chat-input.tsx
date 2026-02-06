@@ -11,6 +11,7 @@
 import { useRef, useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { Send, Loader2, Paperclip, Mic } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -21,6 +22,8 @@ import {
   addMessageAtom,
   streamingMessageAtom,
   updateStreamingMessageAtom,
+  scrollToMessageIdAtom,
+  scrollStateAtom,
 } from '@/lib/atoms';
 import { sendChatMessage } from '@/lib/api';
 import type { Message } from '@/types/chat';
@@ -39,6 +42,8 @@ export function ChatInput({ messages }: ChatInputProps) {
   const addMessage = useSetAtom(addMessageAtom);
   const setStreamingMessage = useSetAtom(streamingMessageAtom);
   const updateStreamingMessage = useSetAtom(updateStreamingMessageAtom);
+  const setScrollToMessageId = useSetAtom(scrollToMessageIdAtom);
+  const setScrollState = useSetAtom(scrollStateAtom);
 
   // 自动聚焦
   useEffect(() => {
@@ -82,6 +87,14 @@ export function ChatInput({ messages }: ChatInputProps) {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
+
+    // 重置滚动状态，准备新的滚动行为
+    setScrollState({
+      userInterrupted: false,
+      anchorMessageId: userMessage.id,
+    });
+    // 指令式滚动：把最新用户消息滚到视口顶部
+    setScrollToMessageId(userMessage.id);
     
     setIsLoading(true);
 
@@ -131,7 +144,7 @@ export function ChatInput({ messages }: ChatInputProps) {
       {/* 悬浮容器 */}
       <div className={cn(
         "relative flex items-end w-full p-2 bg-background/80 backdrop-blur-md border border-border/50 rounded-[26px] shadow-lg shadow-black/5 transition-all duration-300",
-        "focus-within:shadow-xl focus-within:border-primary/20 focus-within:ring-1 focus-within:ring-primary/20",
+        "focus-within:shadow-xl focus-within:border-primary/20 focus-within:ring-1 focus-within:ring-primary/80",
         isLoading && "opacity-80 cursor-not-allowed"
       )}>
         {/* 左侧工具栏 */}
@@ -171,32 +184,32 @@ export function ChatInput({ messages }: ChatInputProps) {
             </Button>
           )}
 
-          <Button
-            onClick={handleSend}
-            disabled={!inputValue.trim() || isLoading}
-            size="icon"
-            className={cn(
-              "h-8 w-8 rounded-full transition-all duration-200 shadow-sm",
-              inputValue.trim() 
-                ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            )}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4 ml-0.5" />
-            )}
-          </Button>
+            <Button
+              onClick={handleSend}
+              disabled={!inputValue.trim() || isLoading}
+              size="icon"
+              className={cn(
+                "h-8 w-8 rounded-full transition-all duration-200 shadow-sm",
+                inputValue.trim() 
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              )}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </motion.div>
         </div>
       </div>
       
-      {/* 底部提示语 */}
-      <div className="text-center mt-3">
-        <p className="text-[10px] text-muted-foreground/40 font-medium tracking-wide">
-          HRY CHAT 可能会生成不准确的信息，请核实重要内容。
-        </p>
-      </div>
+      
     </div>
   );
 }

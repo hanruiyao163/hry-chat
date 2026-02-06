@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import chat, config, conversation
+from app.routers import chat, config, conversation, user
 
 # 创建 FastAPI 应用
 app = FastAPI(
@@ -29,6 +29,7 @@ app.add_middleware(
 app.include_router(chat.router, prefix="/api")
 app.include_router(config.router, prefix="/api")
 app.include_router(conversation.router, prefix="/api")
+app.include_router(user.router, prefix="/api")
 
 
 @app.get("/")

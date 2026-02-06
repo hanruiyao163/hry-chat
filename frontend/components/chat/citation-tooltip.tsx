@@ -20,19 +20,19 @@ interface CitationTooltipProps {
 
 export function CitationTooltip({ citation, children }: CitationTooltipProps) {
   return (
-    <TooltipProvider delayDuration={200}>
+    <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           {children}
         </TooltipTrigger>
         <TooltipContent 
           side="top" 
-          className="max-w-sm p-0 overflow-hidden"
-          sideOffset={5}
+          className="max-w-sm p-0 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          sideOffset={8}
         >
-          <div className="bg-popover text-popover-foreground">
+          <div className="bg-popover text-popover-foreground overflow-hidden rounded-2xl">
             {/* 标题 */}
-            <div className="px-3 py-2 bg-muted/50 border-b">
+            <div className="px-3 py-1 bg-muted/10 border-b">
               <h4 className="font-medium text-sm truncate">
                 {citation.title}
               </h4>
@@ -47,7 +47,7 @@ export function CitationTooltip({ citation, children }: CitationTooltipProps) {
             
             {/* 来源 */}
             {citation.source && (
-              <div className="px-3 py-2 border-t bg-muted/30">
+              <div className="px-3 py-1 border-t bg-muted/30">
                 <a 
                   href={`https://${citation.source}`}
                   target="_blank"

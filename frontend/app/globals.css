@@ -123,3 +123,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevent browser scroll anchoring jumpiness during streaming updates */
+.scroll-anchor-none {
+  overflow-anchor: none;
+}
+
+/* Force instantaneous scroll behavior for precise control */
+.scroll-auto {
+  scroll-behavior: auto;
+}
