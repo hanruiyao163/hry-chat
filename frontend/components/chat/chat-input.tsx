@@ -143,7 +143,7 @@ export function ChatInput({ messages }: ChatInputProps) {
     <div className="max-w-4xl mx-auto w-full px-4 sm:px-0">
       {/* 悬浮容器 */}
       <div className={cn(
-        "relative flex items-end w-full p-2 bg-background/80 backdrop-blur-md border border-border/50 rounded-[26px] shadow-lg shadow-black/5 transition-all duration-300",
+        "relative flex items-end w-full p-2 bg-background/80 backdrop-blur-md border border-border/50 rounded-[26px] shadow-lg shadow-primary/5 transition-all duration-300",
         "focus-within:shadow-xl focus-within:border-primary/20 focus-within:ring-1 focus-within:ring-primary/80",
         isLoading && "opacity-80 cursor-not-allowed"
       )}>
@@ -166,7 +166,7 @@ export function ChatInput({ messages }: ChatInputProps) {
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="给 HRY Chat 发送消息..."
-          className="flex-1 min-h-[40px] max-h-[200px] bg-transparent border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none py-2.5 px-3 text-[15px] leading-relaxed placeholder:text-muted-foreground/50"
+          className="flex-1 min-h-10 max-h-50 bg-transparent border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none py-2.5 px-3 text-[15px] leading-relaxed placeholder:text-muted-foreground/50"
           disabled={isLoading}
           rows={1}
         />

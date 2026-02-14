@@ -20,7 +20,7 @@ async def get_config():
     """
     return ConfigResponse(
         provider=settings.LLM_PROVIDER,
-        model=settings.LLM_MODEL,
+        model=settings.CHAT_MODEL,
         mock_mode=settings.MOCK_MODE,
         app_name=settings.APP_NAME
     )

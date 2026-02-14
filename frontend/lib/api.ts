@@ -4,6 +4,20 @@
  */
 import type { ChatRequest, ChatChunk, ModelConfig, Message } from '@/types/chat';
 import type { UserProfile, UserSettings } from '@/types/user';
+import type {
+  BatchDocumentOperationRequest,
+  BatchDocumentOperationResponse,
+  CreateKnowledgeBaseRequest,
+  FetchKnowledgeDocumentsParams,
+  KnowledgeBase,
+  KnowledgeDocument,
+  KnowledgeDocumentListResponse,
+  PreviewDocumentResponse,
+  UpdateKnowledgeBaseRequest,
+  UpdateKnowledgeDocumentRequest,
+  UpdateKnowledgeDocumentTagsRequest,
+  UploadKnowledgeDocumentsResponse,
+} from '@/types/knowledge-base';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -160,4 +174,195 @@ export async function sendChatMessageComplete(messages: Message[]): Promise<Mess
     createdAt: new Date(data.created_at),
     citations: data.citations,
   };
+}
+
+/**
+ * 获取知识库列表
+ */
+export async function fetchKnowledgeBases(): Promise<KnowledgeBase[]> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch knowledge bases');
+  }
+  return response.json();
+}
+
+/**
+ * 创建知识库
+ */
+export async function createKnowledgeBase(payload: CreateKnowledgeBaseRequest): Promise<KnowledgeBase> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create knowledge base');
+  }
+
+  return response.json();
+}
+
+/**
+ * 更新知识库
+ */
+export async function updateKnowledgeBase(kbId: string, payload: UpdateKnowledgeBaseRequest): Promise<KnowledgeBase> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update knowledge base');
+  }
+
+  return response.json();
+}
+
+/**
+ * 删除知识库
+ */
+export async function deleteKnowledgeBase(kbId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete knowledge base');
+  }
+}
+
+/**
+ * 获取知识库内的文档
+ */
+export async function fetchKnowledgeDocuments(
+  kbId: string,
+  params: FetchKnowledgeDocumentsParams = {}
+): Promise<KnowledgeDocumentListResponse> {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      query.set(key, String(value));
+    }
+  });
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch knowledge documents');
+  }
+  return response.json();
+}
+
+/**
+ * 上传文档到知识库
+ */
+export async function uploadKnowledgeDocuments(
+  kbId: string,
+  files: File[],
+  conflictStrategy: 'rename' | 'replace' | 'cancel' = 'rename'
+): Promise<UploadKnowledgeDocumentsResponse> {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('files', file);
+  });
+
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents/upload?conflict_strategy=${conflictStrategy}`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to upload documents');
+  }
+
+  return response.json();
+}
+
+export async function updateKnowledgeDocument(
+  kbId: string,
+  documentId: string,
+  payload: UpdateKnowledgeDocumentRequest
+): Promise<KnowledgeDocument> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents/${documentId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update document');
+  }
+  return response.json();
+}
+
+export async function updateKnowledgeDocumentTags(
+  kbId: string,
+  documentId: string,
+  payload: UpdateKnowledgeDocumentTagsRequest
+): Promise<KnowledgeDocument> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents/${documentId}/tags`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update document tags');
+  }
+  return response.json();
+}
+
+export async function deleteKnowledgeDocument(kbId: string, documentId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents/${documentId}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete document');
+  }
+}
+
+export async function batchKnowledgeDocuments(
+  kbId: string,
+  payload: BatchDocumentOperationRequest
+): Promise<BatchDocumentOperationResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to batch operate documents');
+  }
+  return response.json();
+}
+
+export async function downloadKnowledgeDocument(kbId: string, documentId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents/${documentId}/download`);
+  if (!response.ok) {
+    throw new Error('Failed to download document');
+  }
+  const blob = await response.blob();
+  const disposition = response.headers.get('Content-Disposition') ?? '';
+  const filenameMatch = disposition.match(/filename="?([^"]+)"?/i);
+  const filename = filenameMatch?.[1] || 'document';
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+export async function previewKnowledgeDocument(kbId: string, documentId: string): Promise<PreviewDocumentResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/knowledge-bases/${kbId}/documents/${documentId}/preview`);
+  if (!response.ok) {
+    throw new Error('Failed to preview document');
+  }
+  return response.json();
 }

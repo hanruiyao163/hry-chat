@@ -10,6 +10,7 @@
 - **流式响应**：打字机效果，实时显示 AI 回复
 - **Mock 模式**：内置测试数据，方便 UI 开发和调试
 - **状态持久化**：对话历史自动保存到本地存储
+- **知识库管理（一期增强）**：支持知识库卡片页、文档表格管理、上传/重命名/删除/下载、启用禁用、标签、预览、筛选排序分页与批量操作
 
 ## 技术栈
 
@@ -22,6 +23,7 @@
 
 ### 后端
 - FastAPI
+- asyncpg
 - Pydantic v2
 - SSE (Server-Sent Events)
 
@@ -174,6 +176,24 @@ data: {"content": "", "done": true, "message_id": "xxx", "citations": [...]}
 - `PUT /api/conversations/{id}` - 更新会话
 - `DELETE /api/conversations/{id}` - 删除会话
 
+### 知识库接口（一期）
+
+- `GET /api/knowledge-bases` - 获取知识库列表
+- `POST /api/knowledge-bases` - 创建知识库
+- `GET /api/knowledge-bases/{kb_id}/documents` - 获取文档分页列表（支持 keyword/sort/filter/page）
+- `POST /api/knowledge-bases/{kb_id}/documents/upload` - 上传文档到知识库（支持冲突策略）
+- `PATCH /api/knowledge-bases/{kb_id}/documents/{doc_id}` - 重命名/启用禁用
+- `PATCH /api/knowledge-bases/{kb_id}/documents/{doc_id}/tags` - 更新标签
+- `DELETE /api/knowledge-bases/{kb_id}/documents/{doc_id}` - 删除文档（硬删除）
+- `POST /api/knowledge-bases/{kb_id}/documents/batch` - 批量删除/启用/禁用
+- `GET /api/knowledge-bases/{kb_id}/documents/{doc_id}/download` - 下载文档
+- `GET /api/knowledge-bases/{kb_id}/documents/{doc_id}/preview` - 预览 txt/md 文档
+
+一期约束：
+- 文件类型白名单：`.pdf` / `.md` / `.txt` / `.docx`
+- 单文件大小限制：20MB
+- 文档状态字段保留 `status`，并新增 `is_enabled`（用于后续检索开关）
+
 ## 自定义引用语法
 
 支持两种引用格式：
@@ -213,7 +233,7 @@ data: {"content": "", "done": true, "message_id": "xxx", "citations": [...]}
 
 ## 后续扩展
 
-- [ ] 知识库管理页面
+- [x] 知识库管理页面（一期完成）
 - [ ] 用户认证系统
 - [ ] LangChain/LangGraph 智能体集成
 - [ ] 多模型切换

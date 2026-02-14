@@ -5,6 +5,7 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import type { Conversation, Message, ModelConfig, Citation } from '@/types/chat';
+import type { KnowledgeBase, KnowledgeDocument } from '@/types/knowledge-base';
 
 // ============ 会话相关 ============
 
@@ -176,3 +177,17 @@ export const updateStreamingMessageAtom = atom(
     }
   }
 );
+
+// ============ 知识库相关 ============
+
+/** 知识库列表 */
+export const knowledgeBasesAtom = atom<KnowledgeBase[]>([]);
+
+/** 当前选中的知识库 ID */
+export const selectedKnowledgeBaseIdAtom = atom<string | null>(null);
+
+/** 文档列表缓存（按知识库 ID） */
+export const knowledgeDocumentsAtom = atom<Record<string, KnowledgeDocument[]>>({});
+
+/** 知识库加载状态 */
+export const knowledgeBaseLoadingAtom = atom<boolean>(false);

@@ -4,8 +4,10 @@ FastAPI 应用入口
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.db import close_db_pool, init_db_pool
 from app.core.config import settings
-from app.routers import chat, config, conversation, user
+from app.routers import chat, config, conversation, knowledge_base, user
+from app.services.knowledge_base_service import ensure_knowledge_base_schema
 
 # 创建 FastAPI 应用
 app = FastAPI(
@@ -30,6 +32,20 @@ app.include_router(chat.router, prefix="/api")
 app.include_router(config.router, prefix="/api")
 app.include_router(conversation.router, prefix="/api")
 app.include_router(user.router, prefix="/api")
+app.include_router(knowledge_base.router, prefix="/api")
+
+
+@app.on_event("startup")
+async def startup_event():
+    """应用启动事件"""
+    pool = await init_db_pool(settings.POSTGRES_URL)
+    await ensure_knowledge_base_schema(pool)
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """应用关闭事件"""
+    await close_db_pool()
 
 
 @app.get("/")
