@@ -4,7 +4,7 @@ Thumbs.db
 Desktop.ini
 
 # IDE & Editors
-.vscode/
+# .vscode/
 .idea/
 *.swp
 *.swo
@@ -82,3 +82,5 @@ uv.lock
 
 # Vercel
 .vercel
+
+volumes/

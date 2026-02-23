@@ -1,0 +1,9 @@
+
+include:
+  - path: milvus-standalone-docker-compose.yml
+  - path: hry-chat-docker-compose.yml
+
+# 声明网络，确保所有包含的文件都能共用它
+networks:
+  default:
+    name: milvus

@@ -1,19 +1,23 @@
-from ast import main
-from pandas import api
-import boto3
-import os
+
 import psycopg
 from pymilvus import MilvusClient
 from app.core.config import Settings
 
 
 def test_connection_s3(settings):
-    # 创建S3客户端（指向R2）
+    import boto3
+    from botocore.client import Config
     s3 = boto3.client(
         "s3",
         endpoint_url=settings.ENDPOINT_URL,
         aws_access_key_id=settings.ACCESS_KEY_ID,
         aws_secret_access_key=settings.SECRET_ACCESS_KEY,
+        region_name="us-east-1",
+        use_ssl=False,
+        # config=Config(
+        #     s3={"addressing_style": "path"},
+        #     signature_version="s3v4",
+        # ),
     )
 
     response = s3.list_objects_v2(Bucket=settings.BUCKET_NAME, Prefix="")

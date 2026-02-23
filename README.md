@@ -229,7 +229,6 @@ data: {"content": "", "done": true, "message_id": "xxx", "citations": [...]}
 ## UI 注意事项
 
 - Tooltip 外层不要设置 `overflow-hidden`，否则箭头会被裁切并出现延迟显示。若需要裁切内容，请把 `overflow-hidden` 放在内部容器上。
-- 流式消息滚动建议：仅在接近底部时自动跟随，避免打断阅读；滚动锚点已关闭，减少内容增量时的跳动。
 
 ## 后续扩展
 
